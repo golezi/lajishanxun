@@ -10,8 +10,8 @@ import android.widget.TextView
 import android.os.Build
 import java.io.Serializable
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import java.util.regex.Pattern
 
 
 class Message(val number: String, val content: String) : Serializable {
