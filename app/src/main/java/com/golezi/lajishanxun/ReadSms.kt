@@ -1,20 +1,17 @@
 package com.golezi.lajishanxun
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.util.Log
-
 import android.net.Uri
 import java.util.*
-
-import android.database.ContentObserver;
+import android.database.ContentObserver
 import android.os.Handler
 import java.text.SimpleDateFormat
-import java.util.*
 import java.util.regex.Pattern
 
 class ReadSms(private val context: Application) : ContentObserver(Handler()) {
 
+    var isExpire= false
 
     fun getMessageOfShanxun(): String {
 
@@ -41,7 +38,7 @@ class ReadSms(private val context: Application) : ContentObserver(Handler()) {
 //        message.date = smsDate
         val address = c.getString(c.getColumnIndexOrThrow("address"))
         val body = c.getString(c.getColumnIndexOrThrow("body"))
-        Log.d("sos", "read  is " + c.getString(c.getColumnIndexOrThrow("read")))
+        Log.d("lajishanxun", "read  is " + c.getString(c.getColumnIndexOrThrow("read")))
 
         c.moveToNext()
 
@@ -49,24 +46,21 @@ class ReadSms(private val context: Application) : ContentObserver(Handler()) {
         Log.i("lajishanxun", "$smsDate\n$address\n$body")
 
         // 密码是否过期
-        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
         val now = simpleDateFormat.format(Date())
         val regExp = "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}"
-        val messageBody = "尊敬的闪讯用户，您的宽带上网密码是：149186,密码在2019-03-18 12:35:06以前有效"
 
         val p = Pattern.compile(regExp)
-        val m = p.matcher(messageBody)
+        val m = p.matcher(body)
         m.find()
         val expireDate = m.group()
-        println(expireDate)
-        var isExpire = "状态:"
-        isExpire += if (now > expireDate) {
-            "已过期"
-        } else {
-            "未过期"
-        }
 
-        return "最近收到的闪讯密码短信:\n\n$body\n\n$isExpire"
+        this.isExpire = now > expireDate
+
+
+        Log.i("lajishanxun", "过期时间$expireDate")
+
+        return "当前时间:$now\n\n过期时间:$expireDate\n\n最近收到的闪讯密码短信:\n\n$body"
 
     }
 }
